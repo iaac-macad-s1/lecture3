@@ -94,7 +94,7 @@ function animate () {
 
 // boolean button handler
 async function boolean () {
-    RhinoCompute.url = 'http://macad2021.compute.rhino3d.com/'
+    RhinoCompute.url = 'https://macad2021.compute.rhino3d.com/'
     
     // ask user for api key (see getApiKey function...)
     RhinoCompute.apiKey = getApiKey()
