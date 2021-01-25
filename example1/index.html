@@ -25,10 +25,22 @@
                 100% { transform: rotate(360deg); }
             }
 
+            #ui {
+                position: absolute;
+                top: 20px;
+                left: 50%;
+            }
+
 		</style>
 	</head>
 	<body>
-		<div id="loader"></div>
+        <div id="loader"></div>
+
+        <div id="ui">
+            <button id="booleanButton" onclick="boolean()" disabled>Boolean</button>
+            <button id="downloadButton" onclick="download()" disabled>Download</button>
+        </div>
+
         <script type="module" src="./script.js"></script>
 	</body>
 </html>
