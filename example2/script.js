@@ -28,11 +28,11 @@ rhino3dm().then(async m => {
     rhino = m
 
     // local 
-    //RhinoCompute.url = 'http://localhost:8081/' // Rhino.Compute server url
+    RhinoCompute.url = 'http://localhost:8081/' // Rhino.Compute server url
 
     // remote
-    RhinoCompute.url = 'http://macad2021.compute.rhino3d.com/'
-    RhinoCompute.apiKey = getApiKey() // needed when calling a remote RhinoCompute server
+    //RhinoCompute.url = 'http://macad2021.compute.rhino3d.com/'
+    //RhinoCompute.apiKey = getApiKey() // needed when calling a remote RhinoCompute server
 
     // source a .gh/.ghx file in the same directory
     let url = definitionName
