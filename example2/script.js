@@ -7,9 +7,9 @@ import { RhinoCompute } from 'https://cdn.jsdelivr.net/npm/compute-rhino3d@0.13.
 const definitionName = 'rnd_node.gh'
 
 const count_slider = document.getElementById( 'count' )
-count_slider.addEventListener( 'mouseup', onSliderChange, false )
+count_slider.addEventListener( 'input', onSliderChange, false )
 const radius_slider = document.getElementById( 'radius' )
-radius_slider.addEventListener( 'mouseup', onSliderChange, false )
+radius_slider.addEventListener( 'input', onSliderChange, false )
 
 // listen for slider change events
 
@@ -28,11 +28,11 @@ rhino3dm().then(async m => {
     rhino = m
 
     // local 
-    RhinoCompute.url = 'http://localhost:8081/' // Rhino.Compute server url
+    //RhinoCompute.url = 'http://localhost:8081/' // Rhino.Compute server url
 
     // remote
-    //RhinoCompute.url = 'http://macad2021.compute.rhino3d.com/'
-    //RhinoCompute.apiKey = getApiKey() // needed when calling a remote RhinoCompute server
+    RhinoCompute.url = 'https://macad2021.compute.rhino3d.com/'
+    RhinoCompute.apiKey = getApiKey() // needed when calling a remote RhinoCompute server
 
     // source a .gh/.ghx file in the same directory
     let url = definitionName
