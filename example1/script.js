@@ -2,34 +2,46 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.124.0/build/three.module.js'
 import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.124.0/examples/jsm/controls/OrbitControls.js'
 import { Rhino3dmLoader } from 'https://cdn.jsdelivr.net/npm/three@0.124.0/examples/jsm/loaders/3DMLoader.js'
+
+// new libraries!
 import rhino3dm from 'https://cdn.jsdelivr.net/npm/rhino3dm@0.15.0-beta/rhino3dm.module.js'
 import { RhinoCompute } from 'https://cdn.jsdelivr.net/npm/compute-rhino3d@0.13.0-beta/compute.rhino3d.module.js'
 
 // declare variables to store scene, camera, and renderer
 let scene, camera, renderer
-// const url = 'Rhino_Logo.3dm'
-const url = 'meshes.3dm'
 
+// set up 3dm loader
 const loader = new Rhino3dmLoader()
 loader.setLibraryPath( 'https://cdn.jsdelivr.net/npm/rhino3dm@0.15.0-beta/' )
 
-let rhino, doc
-
+// set up button click handlers
 const booleanButton = document.getElementById("booleanButton")
 const downloadButton = document.getElementById("downloadButton")
 booleanButton.onclick = boolean
 downloadButton.onclick = download
 
+// create a default material
 const material = new THREE.MeshNormalMaterial({ wireframe: true })
 
+// declare variables to hold rhino library and rhino doc
+let rhino, doc
+
 // load rhino3dm library
+// this library is different to normal javascript libraries (it's actually written in C++)
+// we need to wait for it to load before continuing...
 rhino3dm().then(m => {
+
+    // store rhino3dm library as "rhino" in global scope
     rhino = m
+
+    // rhino3dm is loaded, let's start!
     init()
 })
 
 // function to setup the scene, camera, renderer, and load 3d model
 async function init () {
+
+    // #region three.js setup
 
     // Rhino models are z-up, so set this as the default
     THREE.Object3D.DefaultUp = new THREE.Vector3( 0, 0, 1 );
@@ -53,10 +65,13 @@ async function init () {
     directionalLight.intensity = 2;
     scene.add( directionalLight );
 
+    // #endregion
+
     // load the model...
 
     // instead of relying solely on Rhino3dmLoader, we need to load the rhino model "manually" so
     // that we have access to the original rhino geometry
+    const url = 'meshes.3dm'
     const res = await fetch(url)
     const buffer = await res.arrayBuffer()
     doc = rhino.File3dm.fromByteArray(new Uint8Array(buffer))
@@ -66,7 +81,7 @@ async function init () {
     // having to download it again
     loader.parse( buffer, function ( object ) {
 
-        document.getElementById('loader').remove()
+        hideSpinner()
 
         object.traverse(function (child) {
             if (child.isMesh) {
@@ -74,10 +89,11 @@ async function init () {
             }
         })
         scene.add( object )
+        
+    } )    
 
-        // enable boolean button
-        booleanButton.disabled = false
-    } )
+    // enable boolean button
+    booleanButton.disabled = false
 
     animate()
 }
@@ -92,13 +108,18 @@ function animate () {
 
 // boolean button handler
 async function boolean () {
+
+    // disable boolean button
+    booleanButton.disabled = true
+
+    // local 
+    //RhinoCompute.url = 'http://localhost:8081/' // Rhino.Compute server url
+
+    // remote
     RhinoCompute.url = 'https://macad2021.compute.rhino3d.com/'
-    
-    // ask user for api key (see getApiKey function...)
-    RhinoCompute.apiKey = getApiKey()
+    RhinoCompute.apiKey = getApiKey() // needed when calling a remote RhinoCompute server
 
-    console.log(doc.objects().count)
-
+    // get meshes from rhino doc
     const meshes = []
     for (let i = 0; i < doc.objects().count; i++) {
         const mesh = doc.objects().get(i).geometry();
@@ -106,11 +127,12 @@ async function boolean () {
             meshes.push(mesh)
         }
     }
-
     console.log(meshes)
 
-    const res = await RhinoCompute.Mesh.createBooleanUnion(meshes)
+    showSpinner()
 
+    // perform mesh boolean union on server
+    const res = await RhinoCompute.Mesh.createBooleanUnion(meshes)
     console.log(res)
 
     // clear scene
@@ -131,6 +153,8 @@ async function boolean () {
     const buffer = new Uint8Array(doc.toByteArray()).buffer
     loader.parse( buffer, function ( object ) {
 
+        hideSpinner()
+
         object.traverse(function (child) {
             if (child.isMesh) {
                 child.material = material
@@ -141,12 +165,15 @@ async function boolean () {
         // enable download button
         downloadButton.disabled = false
     } )
+
+    // enable download button
+    downloadButton.disabled = false
 }
 
 // ask user for api key and cache in browser session so we don't need to keep asking
 function getApiKey () {
     let auth = null
-    auth = localStorage['compute_api_key']
+    auth = localStorage['compute_api_key'] // comment this line to ignore cached key
     if (auth == null) {
         auth = window.prompt('RhinoCompute Server API Key')
         if (auth != null) {
@@ -159,13 +186,17 @@ function getApiKey () {
 // download button handler
 function download () {
     let buffer = doc.toByteArray()
-    saveByteArray("boolean.3dm", buffer)
-}
-
-function saveByteArray ( fileName, byte ) {
-    let blob = new Blob([byte], {type: "application/octect-stream"})
+    let blob = new Blob([ buffer ], { type: "application/octect-stream" })
     let link = document.createElement('a')
     link.href = window.URL.createObjectURL(blob)
-    link.download = fileName
+    link.download = 'boolean.3dm'
     link.click()
+}
+
+function showSpinner() {
+    document.getElementById('loader').style.display = 'block'
+}
+
+function hideSpinner() {
+    document.getElementById('loader').style.display = 'none'
 }
