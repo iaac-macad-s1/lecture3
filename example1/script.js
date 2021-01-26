@@ -20,9 +20,7 @@ const downloadButton = document.getElementById("downloadButton")
 booleanButton.onclick = boolean
 downloadButton.onclick = download
 
-const material = new THREE.MeshNormalMaterial()
-material.opacity = 0.5
-material.transparent = true
+const material = new THREE.MeshNormalMaterial({ wireframe: true })
 
 // load rhino3dm library
 rhino3dm().then(m => {
