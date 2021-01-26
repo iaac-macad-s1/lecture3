@@ -20,13 +20,6 @@ downloadButton.onclick = download
 const loader = new Rhino3dmLoader()
 loader.setLibraryPath( 'https://cdn.jsdelivr.net/npm/rhino3dm@0.15.0-beta/' )
 
-// create a js object to hold some data to pass to RhinoCompute
-let args = {
-    algo: null,
-    pointer: null,
-    values: []
-}
-
 // create a few variables to store a reference to the rhino3dm library and to the loaded definition
 let rhino, definition, doc
 
