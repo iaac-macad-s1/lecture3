@@ -3,11 +3,15 @@
 	<head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" href="data:;base64,=">
 		<title>S1 - Lecture 3 - Example 2</title>
 		<style>
-			body { margin: 0; }
+			body { 
+                margin: 0;
+                font-family: sans-serif;
+            }
 
-            input { width: 90%; }
+            input { width: 80%; }
 
 			/* CSS for a spinning animation */ 
 			#loader {
@@ -33,11 +37,11 @@
         <div id="loader"></div>
         <div>
             <input type="range" id="count" name="count" min="2" max="20" value="5" step="1">
-            <label for="count">Count</label>
+            <label for="count">count</label>
         </div>
         <div>
             <input type="range" id="radius" name="radius" min="5" max="20" value="5" step="1">
-            <label for="radius">Radius</label>
+            <label for="radius">radius</label>
         </div>
         <script type="module" src="./script.js"></script>
 	</body>

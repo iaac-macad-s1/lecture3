@@ -45,7 +45,7 @@ rhino3dm().then(async m => {
     animate()
 })
 
-function compute() {
+async function compute() {
 
     // collect data
 
@@ -66,36 +66,34 @@ function compute() {
 
     // Call RhinoCompute
 
-    RhinoCompute.Grasshopper.evaluateDefinition(definition, trees).then(result => {
+    const res = await RhinoCompute.Grasshopper.evaluateDefinition(definition, trees)
 
-        // console.log(result) 
+    console.log(res) 
 
-        // hide spinner
-        document.getElementById('loader').style.display = 'none'
+    // hide spinner
+    document.getElementById('loader').style.display = 'none'
 
-        // collect results
-        let data = JSON.parse(result.values[0].InnerTree['{ 0; }'][0].data)
-        let rhinoMesh = rhino.CommonObject.decode(data)
-        
-        // let mesh = rhino.DracoCompression.decompressBase64String(data)
+    // collect results
+    let data = JSON.parse(res.values[0].InnerTree['{ 0; }'][0].data)
+    let rhinoMesh = rhino.CommonObject.decode(data)
+    
+    // let mesh = rhino.DracoCompression.decompressBase64String(data)
 
-        // convert from rhino3dm to threejs
-        const loader = new THREE.BufferGeometryLoader()
-        const geometry = loader.parse(rhinoMesh.toThreejsJSON())
-        let material = new THREE.MeshNormalMaterial({side: 2})
-        const threeMesh = new THREE.Mesh(geometry, material)
+    // convert from rhino3dm to threejs
+    const loader = new THREE.BufferGeometryLoader()
+    const geometry = loader.parse(rhinoMesh.toThreejsJSON())
+    let material = new THREE.MeshNormalMaterial({side: 2})
+    const threeMesh = new THREE.Mesh(geometry, material)
 
-        // clear meshes from scene
-        scene.traverse(child => {
-            if(child.type === 'Mesh'){
-                scene.remove(child);
-            }
-        })
-
-        // add the mesh to the scene
-        scene.add(threeMesh);
-
+    // clear meshes from scene
+    scene.traverse(child => {
+        if(child.type === 'Mesh'){
+            scene.remove(child);
+        }
     })
+
+    // add the mesh to the scene
+    scene.add(threeMesh);
 
 }
 
